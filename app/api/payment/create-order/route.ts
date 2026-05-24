@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { razorpay } from "@/lib/razorpay";
+import { getRazorpay } from "@/lib/razorpay";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   const amount = Math.round((rfq.quotedAmount ?? 0) * 100); // Razorpay expects paise
   const currency = rfq.quotedCurrency ?? "INR";
 
-  const order = await razorpay.orders.create({
+  const order = await getRazorpay().orders.create({
     amount,
     currency,
     receipt: `rfq_${rfqId.slice(0, 16)}`,
