@@ -5,10 +5,25 @@
 
 -- ─── ENUMS ───────────────────────────────────────────────────
 
-CREATE TYPE IF NOT EXISTS "Role" AS ENUM ('ADMIN', 'CUSTOMER');
-CREATE TYPE IF NOT EXISTS "RFQStatus" AS ENUM ('PENDING', 'REVIEWING', 'QUOTED', 'ACCEPTED', 'REJECTED', 'COMPLETED');
-CREATE TYPE IF NOT EXISTS "PaymentStatus" AS ENUM ('PENDING', 'PAID', 'FAILED', 'REFUNDED');
-CREATE TYPE IF NOT EXISTS "MessageStatus" AS ENUM ('UNREAD', 'READ', 'REPLIED');
+DO $$ BEGIN
+  CREATE TYPE "Role" AS ENUM ('ADMIN', 'CUSTOMER');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  CREATE TYPE "RFQStatus" AS ENUM ('PENDING', 'REVIEWING', 'QUOTED', 'ACCEPTED', 'REJECTED', 'COMPLETED');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'PAID', 'FAILED', 'REFUNDED');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  CREATE TYPE "MessageStatus" AS ENUM ('UNREAD', 'READ', 'REPLIED');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- ─── TABLES ──────────────────────────────────────────────────
 
@@ -158,9 +173,9 @@ CREATE TABLE IF NOT EXISTS "contact_messages" (
 -- ─── INDEXES ─────────────────────────────────────────────────
 
 CREATE UNIQUE INDEX IF NOT EXISTS "users_email_key" ON "users"("email");
-CREATE UNIQUE INDEX IF NOT EXISTS "accounts_provider_provider_account_id_key" ON "accounts"("provider", "provider_account_id");
+CREATE UNIQUE INDEX IF NOT EXISTS "accounts_provider_key" ON "accounts"("provider", "provider_account_id");
 CREATE UNIQUE INDEX IF NOT EXISTS "sessions_session_token_key" ON "sessions"("session_token");
-CREATE UNIQUE INDEX IF NOT EXISTS "verification_tokens_identifier_token_key" ON "verification_tokens"("identifier", "token");
+CREATE UNIQUE INDEX IF NOT EXISTS "verification_tokens_key" ON "verification_tokens"("identifier", "token");
 CREATE UNIQUE INDEX IF NOT EXISTS "blog_posts_slug_key" ON "blog_posts"("slug");
 CREATE UNIQUE INDEX IF NOT EXISTS "payments_rfq_id_key" ON "payments"("rfq_id");
 CREATE UNIQUE INDEX IF NOT EXISTS "payments_razorpay_order_id_key" ON "payments"("razorpay_order_id");
@@ -169,44 +184,32 @@ CREATE UNIQUE INDEX IF NOT EXISTS "payments_razorpay_payment_id_key" ON "payment
 -- ─── FOREIGN KEYS ────────────────────────────────────────────
 
 DO $$ BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'accounts_user_id_fkey'
-  ) THEN
-    ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey"
-      FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-  END IF;
+  ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey"
+    FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 DO $$ BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'sessions_user_id_fkey'
-  ) THEN
-    ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey"
-      FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-  END IF;
+  ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey"
+    FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 DO $$ BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'rfqs_user_id_fkey'
-  ) THEN
-    ALTER TABLE "rfqs" ADD CONSTRAINT "rfqs_user_id_fkey"
-      FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-  END IF;
+  ALTER TABLE "rfqs" ADD CONSTRAINT "rfqs_user_id_fkey"
+    FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 DO $$ BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'payments_rfq_id_fkey'
-  ) THEN
-    ALTER TABLE "payments" ADD CONSTRAINT "payments_rfq_id_fkey"
-      FOREIGN KEY ("rfq_id") REFERENCES "rfqs"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-  END IF;
+  ALTER TABLE "payments" ADD CONSTRAINT "payments_rfq_id_fkey"
+    FOREIGN KEY ("rfq_id") REFERENCES "rfqs"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 -- ─── SEED DATA ───────────────────────────────────────────────
 
--- Admin user (password: Admin@12345)
+-- Admin user  (password: Admin@12345)
 INSERT INTO "users" ("id", "name", "email", "password", "role", "updatedAt")
 VALUES (
   gen_random_uuid()::text,
@@ -218,7 +221,7 @@ VALUES (
 )
 ON CONFLICT ("email") DO NOTHING;
 
--- Demo customer (password: Customer@123)
+-- Demo customer  (password: Customer@123)
 INSERT INTO "users" ("id", "name", "email", "password", "role", "updatedAt")
 VALUES (
   gen_random_uuid()::text,
@@ -233,42 +236,42 @@ ON CONFLICT ("email") DO NOTHING;
 -- Services
 DELETE FROM "services";
 INSERT INTO "services" ("id", "title", "description", "icon", "features", "order", "updatedAt") VALUES
-  (gen_random_uuid()::text, 'Export Solutions', 'End-to-end export management covering documentation, compliance, freight coordination, and international delivery to 45+ countries.', 'Ship', ARRAY['Custom export documentation','Freight coordination','Compliance management','Port handling'], 1, NOW()),
-  (gen_random_uuid()::text, 'Import Assistance', 'Streamlined import services handling customs clearance, duty optimization, and last-mile delivery for businesses worldwide.', 'PackageOpen', ARRAY['Customs clearance','Duty optimization','Last-mile delivery','Import permits'], 2, NOW()),
-  (gen_random_uuid()::text, 'Global Sourcing', 'Connect with verified manufacturers and suppliers globally. We evaluate, negotiate, and manage supplier relationships on your behalf.', 'Globe', ARRAY['Supplier discovery','Quality audits','Price negotiation','Ongoing management'], 3, NOW()),
-  (gen_random_uuid()::text, 'Logistics Coordination', 'Multi-modal logistics solutions including sea freight, air cargo, and road transport with real-time tracking and insurance.', 'Truck', ARRAY['Sea & air freight','Real-time tracking','Cargo insurance','Warehouse solutions'], 4, NOW()),
-  (gen_random_uuid()::text, 'Customs Documentation', 'Expert preparation of all trade documents — commercial invoices, bills of lading, certificates of origin, and compliance filings.', 'FileCheck', ARRAY['HS code classification','Commercial invoices','Certificates of origin','Regulatory filings'], 5, NOW()),
-  (gen_random_uuid()::text, 'Supplier Verification', 'Rigorous due-diligence on potential suppliers including factory audits, financial checks, and product quality testing.', 'ShieldCheck', ARRAY['Factory audits','Financial due diligence','Product testing','Background checks'], 6, NOW());
+  (gen_random_uuid()::text, 'Export Solutions',       'End-to-end export management covering documentation, compliance, freight coordination, and international delivery to 45+ countries.',                                     'Ship',        ARRAY['Custom export documentation','Freight coordination','Compliance management','Port handling'],         1, NOW()),
+  (gen_random_uuid()::text, 'Import Assistance',      'Streamlined import services handling customs clearance, duty optimization, and last-mile delivery for businesses worldwide.',                                           'PackageOpen', ARRAY['Customs clearance','Duty optimization','Last-mile delivery','Import permits'],                          2, NOW()),
+  (gen_random_uuid()::text, 'Global Sourcing',        'Connect with verified manufacturers and suppliers globally. We evaluate, negotiate, and manage supplier relationships on your behalf.',                                  'Globe',       ARRAY['Supplier discovery','Quality audits','Price negotiation','Ongoing management'],                          3, NOW()),
+  (gen_random_uuid()::text, 'Logistics Coordination', 'Multi-modal logistics solutions including sea freight, air cargo, and road transport with real-time tracking and insurance.',                                            'Truck',       ARRAY['Sea & air freight','Real-time tracking','Cargo insurance','Warehouse solutions'],                          4, NOW()),
+  (gen_random_uuid()::text, 'Customs Documentation',  'Expert preparation of all trade documents — commercial invoices, bills of lading, certificates of origin, and compliance filings.',                                     'FileCheck',   ARRAY['HS code classification','Commercial invoices','Certificates of origin','Regulatory filings'],             5, NOW()),
+  (gen_random_uuid()::text, 'Supplier Verification',  'Rigorous due-diligence on potential suppliers including factory audits, financial checks, and product quality testing.',                                                 'ShieldCheck', ARRAY['Factory audits','Financial due diligence','Product testing','Background checks'],                          6, NOW());
 
 -- Products
 DELETE FROM "products";
 INSERT INTO "products" ("id", "title", "category", "description", "featured", "updatedAt") VALUES
-  (gen_random_uuid()::text, 'Basmati Rice', 'Agricultural', 'Premium long-grain basmati rice sourced from the finest farms in India. Available in bulk quantities.', true, NOW()),
-  (gen_random_uuid()::text, 'Turmeric & Spices', 'Spices', 'Curcumin-rich turmeric and a full range of Indian spices — whole, ground, and blended.', true, NOW()),
-  (gen_random_uuid()::text, 'Cotton Fabric', 'Textiles', 'High-quality woven and knitted cotton fabrics for garment manufacturing, available in custom specifications.', false, NOW()),
-  (gen_random_uuid()::text, 'Industrial Machinery', 'Industrial', 'Heavy-duty industrial equipment including presses, lathes, and CNC machines from certified manufacturers.', false, NOW()),
-  (gen_random_uuid()::text, 'Processed Foods', 'Food Products', 'Ready-to-eat and processed food products meeting international food safety and hygiene standards.', false, NOW()),
-  (gen_random_uuid()::text, 'Iron Ore & Minerals', 'Raw Materials', 'High-grade iron ore, granite, and mineral raw materials for industrial applications globally.', false, NOW()),
-  (gen_random_uuid()::text, 'Wheat & Grains', 'Agricultural', 'Non-GMO wheat, sorghum, and specialty grains meeting global export quality benchmarks.', false, NOW()),
-  (gen_random_uuid()::text, 'Cardamom & Pepper', 'Spices', 'Premium-grade cardamom, black pepper, and cumin packed to international export standards.', true, NOW()),
-  (gen_random_uuid()::text, 'Denim & Synthetics', 'Textiles', 'Denim fabric and synthetic blends for fashion and workwear manufacturers worldwide.', false, NOW());
+  (gen_random_uuid()::text, 'Basmati Rice',        'Agricultural',  'Premium long-grain basmati rice sourced from the finest farms in India. Available in bulk quantities.',                               true,  NOW()),
+  (gen_random_uuid()::text, 'Turmeric & Spices',   'Spices',        'Curcumin-rich turmeric and a full range of Indian spices — whole, ground, and blended.',                                             true,  NOW()),
+  (gen_random_uuid()::text, 'Cotton Fabric',       'Textiles',      'High-quality woven and knitted cotton fabrics for garment manufacturing, available in custom specifications.',                        false, NOW()),
+  (gen_random_uuid()::text, 'Industrial Machinery','Industrial',    'Heavy-duty industrial equipment including presses, lathes, and CNC machines from certified manufacturers.',                           false, NOW()),
+  (gen_random_uuid()::text, 'Processed Foods',     'Food Products', 'Ready-to-eat and processed food products meeting international food safety and hygiene standards.',                                   false, NOW()),
+  (gen_random_uuid()::text, 'Iron Ore & Minerals', 'Raw Materials', 'High-grade iron ore, granite, and mineral raw materials for industrial applications globally.',                                       false, NOW()),
+  (gen_random_uuid()::text, 'Wheat & Grains',      'Agricultural',  'Non-GMO wheat, sorghum, and specialty grains meeting global export quality benchmarks.',                                              false, NOW()),
+  (gen_random_uuid()::text, 'Cardamom & Pepper',   'Spices',        'Premium-grade cardamom, black pepper, and cumin packed to international export standards.',                                           true,  NOW()),
+  (gen_random_uuid()::text, 'Denim & Synthetics',  'Textiles',      'Denim fabric and synthetic blends for fashion and workwear manufacturers worldwide.',                                                 false, NOW());
 
 -- Testimonials
 DELETE FROM "testimonials";
 INSERT INTO "testimonials" ("id", "name", "role", "company", "country", "review", "rating", "avatar") VALUES
-  (gen_random_uuid()::text, 'James Whitmore', 'Head of Procurement', 'Whitmore Industrial Group', 'United Kingdom', 'FlexPro has transformed our supply chain. Their supplier verification process and on-time delivery gave us complete confidence in scaling our imports from India. Highly professional team.', 5, 'JW'),
-  (gen_random_uuid()::text, 'Fatima Al-Rashid', 'CEO', 'Gulf Trade Partners LLC', 'UAE', 'Working with FlexPro for 3 years has been exceptional. Their knowledge of customs documentation and regulatory compliance saved us from costly delays multiple times.', 5, 'FA'),
-  (gen_random_uuid()::text, 'Michael Chen', 'Supply Chain Director', 'Pacific Rim Imports', 'Singapore', 'Outstanding logistics coordination and sourcing expertise. FlexPro found us suppliers we could not locate through other channels and negotiated pricing 18% below our previous benchmarks.', 5, 'MC'),
-  (gen_random_uuid()::text, 'Sarah Mitchell', 'Operations Manager', 'Mitchell & Co Exports', 'Australia', 'The customs documentation team at FlexPro is second to none. Complex Australian import requirements handled seamlessly every shipment.', 5, 'SM'),
-  (gen_random_uuid()::text, 'Rolf Brecker', 'Purchasing Director', 'Brecker GmbH', 'Germany', 'We have tried multiple trade partners but FlexPro stands apart for their transparency and attention to compliance. Our textile imports arrive on schedule and within specification.', 5, 'RB');
+  (gen_random_uuid()::text, 'James Whitmore',   'Head of Procurement',   'Whitmore Industrial Group', 'United Kingdom', 'FlexPro has transformed our supply chain. Their supplier verification process and on-time delivery gave us complete confidence in scaling our imports from India. Highly professional team.',                                                         5, 'JW'),
+  (gen_random_uuid()::text, 'Fatima Al-Rashid', 'CEO',                   'Gulf Trade Partners LLC',   'UAE',            'Working with FlexPro for 3 years has been exceptional. Their knowledge of customs documentation and regulatory compliance saved us from costly delays multiple times.',                                                                               5, 'FA'),
+  (gen_random_uuid()::text, 'Michael Chen',     'Supply Chain Director', 'Pacific Rim Imports',       'Singapore',      'Outstanding logistics coordination and sourcing expertise. FlexPro found us suppliers we could not locate through other channels and negotiated pricing 18% below our previous benchmarks.',                                                        5, 'MC'),
+  (gen_random_uuid()::text, 'Sarah Mitchell',   'Operations Manager',    'Mitchell & Co Exports',     'Australia',      'The customs documentation team at FlexPro is second to none. Complex Australian import requirements handled seamlessly every shipment.',                                                                                                           5, 'SM'),
+  (gen_random_uuid()::text, 'Rolf Brecker',     'Purchasing Director',   'Brecker GmbH',              'Germany',        'We have tried multiple trade partners but FlexPro stands apart for their transparency and attention to compliance. Our textile imports arrive on schedule and within specification.',                                                               5, 'RB');
 
 -- Blog posts
 DELETE FROM "blog_posts";
 INSERT INTO "blog_posts" ("id", "title", "excerpt", "content", "date", "category", "readTime", "slug", "published", "updatedAt") VALUES
-  (gen_random_uuid()::text, 'How to Choose the Right Export Partner for Your Business', 'A comprehensive guide to evaluating international trade partners — what to look for, red flags to avoid, and how to structure agreements.', '<p>Choosing the right export partner is one of the most critical decisions for any business entering international trade...</p>', '2026-05-10', 'Trade Strategy', '6 min read', 'choose-right-export-partner', true, NOW()),
-  (gen_random_uuid()::text, 'Understanding India''s APEDA Regulations for Food Exports', 'Everything exporters need to know about APEDA registration, product categories, and documentation requirements for agricultural exports.', '<p>APEDA (Agricultural and Processed Food Products Export Development Authority) is the body responsible for...</p>', '2026-04-22', 'Compliance', '8 min read', 'apeda-regulations-food-exports', true, NOW()),
-  (gen_random_uuid()::text, 'Top 5 Logistics Trends Shaping Global Trade in 2026', 'From AI-driven freight optimization to green shipping corridors — the logistics innovations redefining international supply chains.', '<p>The logistics industry is undergoing rapid transformation in 2026...</p>', '2026-04-05', 'Logistics', '5 min read', 'logistics-trends-2026', true, NOW()),
-  (gen_random_uuid()::text, 'Customs Documentation: A Complete Checklist for Importers', 'Avoid costly delays with our definitive checklist of customs documents required for smooth clearance across major markets.', '<p>Customs documentation errors are among the leading causes of shipment delays...</p>', '2026-03-18', 'Compliance', '7 min read', 'customs-documentation-checklist', true, NOW());
+  (gen_random_uuid()::text, 'How to Choose the Right Export Partner for Your Business',   'A comprehensive guide to evaluating international trade partners — what to look for, red flags to avoid, and how to structure agreements.',                                                       '<p>Choosing the right export partner is one of the most critical decisions for any business entering international trade...</p>', '2026-05-10', 'Trade Strategy', '6 min read', 'choose-right-export-partner',        true, NOW()),
+  (gen_random_uuid()::text, 'Understanding India''s APEDA Regulations for Food Exports', 'Everything exporters need to know about APEDA registration, product categories, and documentation requirements for agricultural exports.',                                                          '<p>APEDA (Agricultural and Processed Food Products Export Development Authority) is the body responsible for...</p>',            '2026-04-22', 'Compliance',     '8 min read', 'apeda-regulations-food-exports',      true, NOW()),
+  (gen_random_uuid()::text, 'Top 5 Logistics Trends Shaping Global Trade in 2026',       'From AI-driven freight optimization to green shipping corridors — the logistics innovations redefining international supply chains.',                                                               '<p>The logistics industry is undergoing rapid transformation in 2026...</p>',                                                     '2026-04-05', 'Logistics',      '5 min read', 'logistics-trends-2026',               true, NOW()),
+  (gen_random_uuid()::text, 'Customs Documentation: A Complete Checklist for Importers', 'Avoid costly delays with our definitive checklist of customs documents required for smooth clearance across major markets.',                                                                        '<p>Customs documentation errors are among the leading causes of shipment delays...</p>',                                          '2026-03-18', 'Compliance',     '7 min read', 'customs-documentation-checklist',     true, NOW());
 
 -- Demo RFQ linked to demo customer
 DO $$
@@ -302,5 +305,5 @@ BEGIN
   END IF;
 END $$;
 
--- Done!
-SELECT 'FlexPro database setup complete ✓' AS status;
+-- ─── DONE ────────────────────────────────────────────────────
+SELECT 'FlexPro database setup complete' AS status;

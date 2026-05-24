@@ -16,20 +16,25 @@ export default async function DashboardPage() {
   const session = await auth();
   const userId = session!.user.id;
 
-  const [rfqs, paid] = await Promise.all([
-    prisma.rFQ.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      include: { payment: true },
-    }),
-    prisma.payment.count({ where: { rfq: { userId }, status: "PAID" } }),
-  ]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let rfqs: any[] = [];
+  let paid = 0;
+  try {
+    [rfqs, paid] = await Promise.all([
+      prisma.rFQ.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        include: { payment: true },
+      }),
+      prisma.payment.count({ where: { rfq: { userId }, status: "PAID" } }),
+    ]);
+  } catch {
+    // DB not ready yet — show empty dashboard
+  }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pending = (rfqs as any[]).filter((r) => r.status === "PENDING").length;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const quoted = (rfqs as any[]).filter((r) => r.status === "QUOTED").length;
+  const pending = rfqs.filter((r) => r.status === "PENDING").length;
+  const quoted = rfqs.filter((r) => r.status === "QUOTED").length;
 
   return (
     <div className="p-8">
@@ -79,8 +84,7 @@ export default async function DashboardPage() {
           <Link href="/dashboard/rfqs" className="text-gold-400 text-xs hover:text-gold-300">View all →</Link>
         </div>
         <div className="divide-y divide-white/5">
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          {(rfqs as any[]).map((rfq) => (
+          {rfqs.map((rfq) => (
             <Link key={rfq.id} href={`/dashboard/rfqs/${rfq.id}`}
               className="flex items-center justify-between px-5 py-4 hover:bg-white/2 transition-colors group">
               <div>

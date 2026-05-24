@@ -178,14 +178,23 @@ export default function Navbar() {
                 </AnimatePresence>
               </div>
             ) : (
-              /* Logged-out: Sign In + Request Quote */
-              <Link
-                href="/auth/login"
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white border border-white/15 hover:border-white/30 transition-all duration-200 hover:bg-white/5"
-              >
-                <User className="w-4 h-4 text-gold-400" />
-                Sign In
-              </Link>
+              /* Logged-out: Sign In + Register */
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/auth/login"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white border border-white/15 hover:border-white/30 transition-all duration-200 hover:bg-white/5"
+                >
+                  <User className="w-4 h-4 text-gold-400" />
+                  Sign In
+                </Link>
+                <Link
+                  href="/auth/register"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-navy-950 transition-all duration-200 hover:opacity-90"
+                  style={{ background: "linear-gradient(135deg, #e6b800 0%, #c9a100 100%)" }}
+                >
+                  Register
+                </Link>
+              </div>
             )}
 
             <a
@@ -270,14 +279,24 @@ export default function Navbar() {
                     </button>
                   </>
                 ) : (
-                  <Link
-                    href="/auth/login"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-white border border-white/15 hover:bg-white/5 transition-colors"
-                  >
-                    <User className="w-4 h-4 text-gold-400" />
-                    Sign In / Register
-                  </Link>
+                  <>
+                    <Link
+                      href="/auth/login"
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-white border border-white/15 hover:bg-white/5 transition-colors"
+                    >
+                      <User className="w-4 h-4 text-gold-400" />
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/auth/register"
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold text-navy-950 transition-colors"
+                      style={{ background: "linear-gradient(135deg, #e6b800 0%, #c9a100 100%)" }}
+                    >
+                      Create Account
+                    </Link>
+                  </>
                 )}
 
                 <a
