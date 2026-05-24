@@ -1,14 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Phone, MessageCircle, Globe } from "lucide-react";
+import { Menu, X, Phone, MessageCircle, Globe, User, LogOut, LayoutDashboard, ChevronDown, Shield } from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
+import { useSession, signOut } from "next-auth/react";
+import Link from "next/link";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (accountRef.current && !accountRef.current.contains(e.target as Node)) {
+        setAccountOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -105,6 +120,74 @@ export default function Navbar() {
               <MessageCircle className="w-4 h-4 text-green-400" />
               WhatsApp
             </a>
+
+            {status === "loading" ? (
+              <div className="w-8 h-8 rounded-full border border-white/10 animate-pulse bg-white/5" />
+            ) : session ? (
+              /* Logged-in account dropdown */
+              <div ref={accountRef} className="relative">
+                <button
+                  onClick={() => setAccountOpen((o) => !o)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/15 hover:border-white/30 bg-white/5 hover:bg-white/10 transition-all duration-200"
+                >
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                    style={{ background: "linear-gradient(135deg, #0a1628 0%, #2255cc 100%)" }}>
+                    {session.user?.name?.charAt(0).toUpperCase() ?? "U"}
+                  </div>
+                  <span className="text-white text-sm font-medium max-w-[100px] truncate">
+                    {session.user?.name?.split(" ")[0]}
+                  </span>
+                  <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${accountOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                <AnimatePresence>
+                  {accountOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-white/10 shadow-2xl overflow-hidden z-50"
+                      style={{ background: "#0d1c36" }}
+                    >
+                      <div className="px-4 py-3 border-b border-white/8">
+                        <div className="text-white text-sm font-semibold truncate">{session.user?.name}</div>
+                        <div className="text-slate-500 text-xs truncate mt-0.5">{session.user?.email}</div>
+                      </div>
+                      <div className="p-2">
+                        <Link
+                          href={session.user?.role === "ADMIN" ? "/admin" : "/dashboard"}
+                          onClick={() => setAccountOpen(false)}
+                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:text-white hover:bg-white/8 transition-colors"
+                        >
+                          {session.user?.role === "ADMIN"
+                            ? <Shield className="w-4 h-4 text-gold-400" />
+                            : <LayoutDashboard className="w-4 h-4 text-gold-400" />}
+                          {session.user?.role === "ADMIN" ? "Admin Panel" : "My Dashboard"}
+                        </Link>
+                        <button
+                          onClick={() => { setAccountOpen(false); signOut({ callbackUrl: "/" }); }}
+                          className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:text-red-400 hover:bg-red-500/8 transition-colors"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Sign Out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              /* Logged-out: Sign In + Request Quote */
+              <Link
+                href="/auth/login"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white border border-white/15 hover:border-white/30 transition-all duration-200 hover:bg-white/5"
+              >
+                <User className="w-4 h-4 text-gold-400" />
+                Sign In
+              </Link>
+            )}
+
             <a
               href="#rfq"
               onClick={(e) => { e.preventDefault(); handleNavClick("#rfq"); }}
@@ -165,6 +248,38 @@ export default function Navbar() {
                   <MessageCircle className="w-4 h-4 text-green-400" />
                   WhatsApp Us
                 </a>
+
+                {session ? (
+                  <>
+                    <Link
+                      href={session.user?.role === "ADMIN" ? "/admin" : "/dashboard"}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-white border border-white/15 hover:bg-white/5 transition-colors"
+                    >
+                      {session.user?.role === "ADMIN"
+                        ? <Shield className="w-4 h-4 text-gold-400" />
+                        : <LayoutDashboard className="w-4 h-4 text-gold-400" />}
+                      {session.user?.role === "ADMIN" ? "Admin Panel" : "My Dashboard"}
+                    </Link>
+                    <button
+                      onClick={() => { setIsOpen(false); signOut({ callbackUrl: "/" }); }}
+                      className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-red-400 border border-red-500/20 hover:bg-red-500/8 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/auth/login"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-white border border-white/15 hover:bg-white/5 transition-colors"
+                  >
+                    <User className="w-4 h-4 text-gold-400" />
+                    Sign In / Register
+                  </Link>
+                )}
+
                 <a
                   href="#rfq"
                   onClick={(e) => { e.preventDefault(); handleNavClick("#rfq"); }}
