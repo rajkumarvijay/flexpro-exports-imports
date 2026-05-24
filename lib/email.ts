@@ -77,7 +77,7 @@ export async function sendAdminRFQAlert(rfq: {
   `;
 
   await transporter.sendMail({
-    from: `"FlexPro Alerts" <${user}>`,
+    from: `"FlexPro Alerts" <${process.env.SMTP_USER}>`,
     to: adminEmail,
     subject: `New RFQ: ${rfq.productRequired} — ${rfq.fullName} (${rfq.companyName})`,
     html,
