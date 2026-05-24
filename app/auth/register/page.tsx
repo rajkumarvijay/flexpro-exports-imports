@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Globe, Mail, Lock, User, Loader2 } from "lucide-react";
@@ -23,18 +24,32 @@ export default function RegisterPage() {
       return;
     }
     setLoading(true);
+    // Step 1: create the account
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: form.name, email: form.email, password: form.password }),
     });
-    setLoading(false);
     const data = await res.json();
     if (!res.ok) {
+      setLoading(false);
       toast.error(data.error || "Registration failed");
-    } else {
+      return;
+    }
+    // Step 2: auto sign-in so user lands directly on dashboard
+    const signInRes = await signIn("credentials", {
+      email: form.email,
+      password: form.password,
+      redirect: false,
+    });
+    setLoading(false);
+    if (signInRes?.error) {
       toast.success("Account created! Please sign in.");
       router.push("/auth/login");
+    } else {
+      toast.success("Welcome to FlexPro!");
+      router.push("/dashboard");
+      router.refresh();
     }
   };
 
