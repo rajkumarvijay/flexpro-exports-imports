@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sendAdminRFQAlert } from "@/lib/email";
 import { z } from "zod";
 
 const RFQSchema = z.object({
@@ -39,5 +40,11 @@ export async function POST(req: NextRequest) {
       userId: session?.user?.id ?? null,
     },
   });
+
+  // Fire-and-forget admin email alert (never blocks the response)
+  sendAdminRFQAlert(parsed.data).catch((err) =>
+    console.error("[rfq] admin alert failed:", err)
+  );
+
   return NextResponse.json({ success: true, id: rfq.id }, { status: 201 });
 }

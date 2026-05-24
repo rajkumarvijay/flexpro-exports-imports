@@ -2,16 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 import { Globe, LayoutDashboard, Package, FileText, MessageSquare, ClipboardList, LogOut, ExternalLink } from "lucide-react";
-
-const navItems = [
-  { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { label: "RFQs", href: "/admin/rfqs", icon: ClipboardList },
-  { label: "Products", href: "/admin/products", icon: Package },
-  { label: "Blog", href: "/admin/blog", icon: FileText },
-  { label: "Messages", href: "/admin/messages", icon: MessageSquare },
-];
 
 interface Props {
   user: { name?: string | null; email?: string | null };
@@ -19,6 +12,27 @@ interface Props {
 
 export default function AdminSidebar({ user }: Props) {
   const pathname = usePathname();
+  const [pendingCount, setPendingCount] = useState(0);
+
+  // Poll for pending RFQ count every 30s so badge stays live
+  useEffect(() => {
+    const load = () =>
+      fetch("/api/admin/stats")
+        .then((r) => r.json())
+        .then((d) => setPendingCount(d.pendingRFQs ?? 0))
+        .catch(() => {});
+    load();
+    const t = setInterval(load, 30_000);
+    return () => clearInterval(t);
+  }, []);
+
+  const navItems = [
+    { label: "Dashboard",  href: "/admin",          icon: LayoutDashboard, badge: 0 },
+    { label: "RFQs",       href: "/admin/rfqs",      icon: ClipboardList,   badge: pendingCount },
+    { label: "Products",   href: "/admin/products",  icon: Package,         badge: 0 },
+    { label: "Blog",       href: "/admin/blog",       icon: FileText,        badge: 0 },
+    { label: "Messages",   href: "/admin/messages",   icon: MessageSquare,   badge: 0 },
+  ];
 
   return (
     <aside className="w-64 flex-shrink-0 border-r border-white/5 flex flex-col"
@@ -38,7 +52,7 @@ export default function AdminSidebar({ user }: Props) {
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1">
-        {navItems.map(({ label, href, icon: Icon }) => {
+        {navItems.map(({ label, href, icon: Icon, badge }) => {
           const isActive = href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
           return (
             <Link
@@ -52,7 +66,12 @@ export default function AdminSidebar({ user }: Props) {
               style={isActive ? { background: "rgba(230,184,0,0.08)" } : {}}
             >
               <Icon className="w-4 h-4" />
-              {label}
+              <span className="flex-1">{label}</span>
+              {badge > 0 && (
+                <span className="px-1.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 min-w-[20px] text-center">
+                  {badge}
+                </span>
+              )}
             </Link>
           );
         })}

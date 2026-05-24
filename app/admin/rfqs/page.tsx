@@ -30,8 +30,18 @@ export default function AdminRFQsPage() {
   const [updating, setUpdating] = useState(false);
   const [formState, setFormState] = useState({ status: "", quotedAmount: "", adminNotes: "" });
 
+  const loadRFQs = () =>
+    fetch("/api/rfq")
+      .then((r) => r.json())
+      .then((data) => { setRfqs(data); setLoading(false); })
+      .catch(() => setLoading(false));
+
   useEffect(() => {
-    fetch("/api/rfq").then(r => r.json()).then(data => { setRfqs(data); setLoading(false); });
+    loadRFQs();
+    // Auto-refresh every 30 seconds so new submissions appear without manual reload
+    const interval = setInterval(loadRFQs, 30_000);
+    return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filtered = rfqs.filter(r =>
@@ -105,7 +115,12 @@ export default function AdminRFQsPage() {
                 {filtered.map((rfq) => (
                   <tr key={rfq.id} className="hover:bg-white/2 transition-colors">
                     <td className="px-4 py-3">
-                      <div className="text-white font-medium">{rfq.fullName}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white font-medium">{rfq.fullName}</span>
+                        {Date.now() - new Date(rfq.createdAt).getTime() < 10 * 60 * 1000 && (
+                          <span className="px-1.5 py-0.5 rounded text-xs font-bold bg-green-500/15 text-green-400 border border-green-500/20">NEW</span>
+                        )}
+                      </div>
                       <div className="text-slate-500 text-xs">{rfq.companyName}</div>
                     </td>
                     <td className="px-4 py-3 text-slate-300">{rfq.productRequired}</td>
