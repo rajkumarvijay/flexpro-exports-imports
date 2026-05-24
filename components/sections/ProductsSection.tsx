@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Tag, ArrowRight, Package, ShoppingBag } from "lucide-react";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { PRODUCTS, PRODUCT_CATEGORIES } from "@/lib/constants";
+import type { Product } from "@/types";
 
 const categoryColors: Record<string, string> = {
   Agricultural: "bg-green-100 text-green-700",
@@ -24,12 +25,13 @@ const categoryGradients: Record<string, string> = {
   "Raw Materials": "from-stone-700/40 to-stone-600/20",
 };
 
-export default function ProductsSection() {
+export default function ProductsSection({ products: propProducts }: { products?: Product[] }) {
+  const products = propProducts && propProducts.length > 0 ? propProducts : PRODUCTS;
   const [activeCategory, setActiveCategory] = useState("All");
 
   const filtered = activeCategory === "All"
-    ? PRODUCTS
-    : PRODUCTS.filter((p) => p.category === activeCategory);
+    ? products
+    : products.filter((p) => p.category === activeCategory);
 
   return (
     <section id="products" className="section-padding bg-white">

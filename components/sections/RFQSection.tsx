@@ -50,11 +50,21 @@ export default function RFQSection() {
     e.preventDefault();
     if (!validate()) return;
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1800));
-    setIsSubmitting(false);
-    setIsSuccess(true);
-    setForm(initialForm);
-    setTimeout(() => setIsSuccess(false), 5000);
+    try {
+      const res = await fetch("/api/rfq", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error("Failed to submit");
+      setIsSuccess(true);
+      setForm(initialForm);
+      setTimeout(() => setIsSuccess(false), 5000);
+    } catch {
+      setErrors({ email: "Failed to send. Please try again." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

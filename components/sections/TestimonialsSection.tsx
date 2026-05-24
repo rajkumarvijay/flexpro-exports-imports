@@ -5,12 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { TESTIMONIALS } from "@/lib/constants";
+import type { Testimonial } from "@/types";
 
-export default function TestimonialsSection() {
+export default function TestimonialsSection({ testimonials: propTestimonials }: { testimonials?: Testimonial[] }) {
+  const testimonials = propTestimonials && propTestimonials.length > 0 ? propTestimonials : TESTIMONIALS;
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
 
-  const total = TESTIMONIALS.length;
+  const total = testimonials.length;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -57,26 +59,26 @@ export default function TestimonialsSection() {
 
                   {/* Stars */}
                   <div className="flex gap-1 mb-4">
-                    {Array.from({ length: TESTIMONIALS[current].rating }).map((_, i) => (
+                    {Array.from({ length: testimonials[current].rating }).map((_, i) => (
                       <Star key={i} className="w-4 h-4 fill-gold-500 text-gold-500" />
                     ))}
                   </div>
 
                   {/* Review */}
                   <p className="text-navy-800 text-base md:text-lg leading-relaxed mb-8 italic">
-                    &ldquo;{TESTIMONIALS[current].review}&rdquo;
+                    &ldquo;{testimonials[current].review}&rdquo;
                   </p>
 
                   {/* Author */}
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg"
                       style={{ background: "linear-gradient(135deg, #0a1628 0%, #2255cc 100%)" }}>
-                      {TESTIMONIALS[current].avatar}
+                      {testimonials[current].avatar}
                     </div>
                     <div>
-                      <div className="text-navy-900 font-semibold text-sm">{TESTIMONIALS[current].name}</div>
-                      <div className="text-slate-500 text-xs">{TESTIMONIALS[current].role}, {TESTIMONIALS[current].company}</div>
-                      <div className="text-gold-600 text-xs font-medium mt-0.5">{TESTIMONIALS[current].country}</div>
+                      <div className="text-navy-900 font-semibold text-sm">{testimonials[current].name}</div>
+                      <div className="text-slate-500 text-xs">{testimonials[current].role}, {testimonials[current].company}</div>
+                      <div className="text-gold-600 text-xs font-medium mt-0.5">{testimonials[current].country}</div>
                     </div>
                   </div>
                 </div>
@@ -96,7 +98,7 @@ export default function TestimonialsSection() {
 
             {/* Dots */}
             <div className="flex gap-2">
-              {TESTIMONIALS.map((_, i) => (
+              {testimonials.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i); }}
@@ -124,7 +126,7 @@ export default function TestimonialsSection() {
 
           {/* Mini cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8">
-            {TESTIMONIALS.slice(0, 4).map(({ id, name, country, avatar, rating }, i) => (
+            {testimonials.slice(0, 4).map(({ id, name, country, avatar, rating }, i) => (
               <motion.button
                 key={id}
                 onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i); }}

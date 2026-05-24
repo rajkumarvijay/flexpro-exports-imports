@@ -5,6 +5,7 @@ import { Calendar, Clock, Tag, ArrowRight } from "lucide-react";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { BLOG_POSTS } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
+import type { BlogPost } from "@/types";
 
 const categoryColors: Record<string, string> = {
   "Trade Strategy": "bg-blue-100 text-blue-700",
@@ -19,7 +20,8 @@ const postGradients = [
   "from-slate-900 to-navy-900",
 ];
 
-export default function BlogSection() {
+export default function BlogSection({ posts: propPosts }: { posts?: BlogPost[] }) {
+  const posts = propPosts && propPosts.length > 0 ? propPosts : BLOG_POSTS;
   return (
     <section id="blog" className="section-padding bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -31,7 +33,7 @@ export default function BlogSection() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {BLOG_POSTS.map(({ id, title, excerpt, date, category, readTime, slug }, i) => (
+          {posts.map(({ id, title, excerpt, date, category, readTime, slug }, i) => (
             <motion.article
               key={id}
               initial={{ opacity: 0, y: 24 }}

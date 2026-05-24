@@ -4,12 +4,14 @@ import { motion } from "framer-motion";
 import { Ship, PackageOpen, Globe, Truck, FileCheck, ShieldCheck, ArrowRight } from "lucide-react";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { SERVICES } from "@/lib/constants";
+import type { Service } from "@/types";
 
 const iconMap: Record<string, React.ElementType> = {
   Ship, PackageOpen, Globe, Truck, FileCheck, ShieldCheck,
 };
 
-export default function ServicesSection() {
+export default function ServicesSection({ services: propServices }: { services?: Service[] }) {
+  const resolvedServices = propServices && propServices.length > 0 ? propServices : SERVICES;
   return (
     <section id="services" className="section-padding bg-navy-950 relative overflow-hidden">
       <div className="absolute inset-0 grid-texture opacity-50 pointer-events-none" />
@@ -26,7 +28,7 @@ export default function ServicesSection() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {SERVICES.map(({ id, title, description, icon, features }, i) => {
+          {resolvedServices.map(({ id, title, description, icon, features }, i) => {
             const Icon = iconMap[icon] || Globe;
             return (
               <motion.div
