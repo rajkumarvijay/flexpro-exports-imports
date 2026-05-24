@@ -28,7 +28,7 @@ export default function TestimonialsSection({ testimonials: propTestimonials }: 
   };
 
   return (
-    <section id="testimonials" className="section-padding bg-slate-50">
+    <section id="testimonials" className="section-padding bg-navy-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
           badge="Client Testimonials"
@@ -39,7 +39,7 @@ export default function TestimonialsSection({ testimonials: propTestimonials }: 
 
         <div className="relative max-w-4xl mx-auto">
           {/* Main testimonial */}
-          <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl min-h-[320px] flex items-center">
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 min-h-[320px] flex items-center" style={{ background: "rgba(255,255,255,0.04)" }}>
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={current}
@@ -54,7 +54,7 @@ export default function TestimonialsSection({ testimonials: propTestimonials }: 
                   {/* Quote icon */}
                   <div className="w-12 h-12 rounded-xl mb-6 flex items-center justify-center"
                     style={{ background: "rgba(230,184,0,0.1)" }}>
-                    <Quote className="w-6 h-6 text-gold-600" />
+                    <Quote className="w-6 h-6 text-gold-400" />
                   </div>
 
                   {/* Stars */}
@@ -65,7 +65,7 @@ export default function TestimonialsSection({ testimonials: propTestimonials }: 
                   </div>
 
                   {/* Review */}
-                  <p className="text-navy-800 text-base md:text-lg leading-relaxed mb-8 italic">
+                  <p className="text-slate-300 text-base md:text-lg leading-relaxed mb-8 italic">
                     &ldquo;{testimonials[current].review}&rdquo;
                   </p>
 
@@ -76,7 +76,7 @@ export default function TestimonialsSection({ testimonials: propTestimonials }: 
                       {testimonials[current].avatar}
                     </div>
                     <div>
-                      <div className="text-navy-900 font-semibold text-sm">{testimonials[current].name}</div>
+                      <div className="text-white font-semibold text-sm">{testimonials[current].name}</div>
                       <div className="text-slate-500 text-xs">{testimonials[current].role}, {testimonials[current].company}</div>
                       <div className="text-gold-600 text-xs font-medium mt-0.5">{testimonials[current].country}</div>
                     </div>
@@ -90,7 +90,7 @@ export default function TestimonialsSection({ testimonials: propTestimonials }: 
           <div className="flex items-center justify-between mt-6">
             <button
               onClick={() => navigate(-1)}
-              className="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 hover:text-navy-900 transition-colors shadow-sm"
+              className="w-10 h-10 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
               aria-label="Previous"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -117,7 +117,7 @@ export default function TestimonialsSection({ testimonials: propTestimonials }: 
 
             <button
               onClick={() => navigate(1)}
-              className="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 hover:text-navy-900 transition-colors shadow-sm"
+              className="w-10 h-10 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
               aria-label="Next"
             >
               <ChevronRight className="w-5 h-5" />
@@ -132,7 +132,7 @@ export default function TestimonialsSection({ testimonials: propTestimonials }: 
                 onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i); }}
                 whileHover={{ scale: 1.02 }}
                 className={`rounded-xl p-3 text-left transition-all duration-200 border ${
-                  current === i ? "border-gold-300 bg-gold-50" : "border-slate-200 bg-white hover:border-slate-300"
+                  current === i ? "border-gold-500/40 bg-gold-500/10" : "border-white/8 bg-white/4 hover:border-white/15"
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1.5">
@@ -140,7 +140,7 @@ export default function TestimonialsSection({ testimonials: propTestimonials }: 
                     style={{ background: "linear-gradient(135deg, #0a1628 0%, #2255cc 100%)" }}>
                     {avatar}
                   </div>
-                  <div className="text-xs font-medium text-navy-900 truncate">{name.split(" ")[0]}</div>
+                  <div className="text-xs font-medium text-white truncate">{name.split(" ")[0]}</div>
                 </div>
                 <div className="text-slate-400 text-xs">{country}</div>
                 <div className="flex gap-0.5 mt-1">

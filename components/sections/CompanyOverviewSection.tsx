@@ -18,7 +18,7 @@ const highlights = [
 
 export default function CompanyOverviewSection() {
   return (
-    <section id="about" className="section-padding bg-slate-50">
+    <section id="about" className="section-padding bg-navy-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left */}
@@ -35,10 +35,10 @@ export default function CompanyOverviewSection() {
               subtitle=""
               centered={false}
             />
-            <p className="text-slate-600 text-base leading-relaxed mb-6">
+            <p className="text-slate-400 text-base leading-relaxed mb-6">
               Founded in 2010, FlexPro Exports & Imports has grown into a trusted name in global trade, helping businesses across 45+ countries source premium products, navigate complex customs requirements, and deliver shipments reliably.
             </p>
-            <p className="text-slate-600 text-base leading-relaxed mb-8">
+            <p className="text-slate-400 text-base leading-relaxed mb-8">
               Our team of trade specialists, logistics coordinators, and compliance experts work as an extension of your business — ensuring every transaction is smooth, transparent, and profitable.
             </p>
             <ul className="space-y-3">
@@ -49,9 +49,9 @@ export default function CompanyOverviewSection() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  className="flex items-start gap-3 text-slate-700 text-sm"
+                  className="flex items-start gap-3 text-slate-300 text-sm"
                 >
-                  <CheckCircle className="w-4 h-4 text-gold-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-4 h-4 text-gold-400 flex-shrink-0 mt-0.5" />
                   {item}
                 </motion.li>
               ))}
@@ -70,15 +70,16 @@ export default function CompanyOverviewSection() {
                     whileInView={{ opacity: 1, y: 0, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: i * 0.1 }}
-                    className="relative overflow-hidden rounded-2xl p-6 group card-hover gold-border-glow border border-slate-200 bg-white shadow-sm"
+                    className="relative overflow-hidden rounded-2xl p-6 group card-hover gold-border-glow border border-white/8"
+                    style={{ background: "rgba(255,255,255,0.04)" }}
                   >
                     <div className="absolute top-0 right-0 w-24 h-24 rounded-full opacity-5 -translate-y-8 translate-x-8"
                       style={{ background: "radial-gradient(circle, #e6b800, transparent)" }} />
                     <div className="w-10 h-10 rounded-xl mb-4 flex items-center justify-center"
                       style={{ background: "rgba(230, 184, 0, 0.12)" }}>
-                      <Icon className="w-5 h-5 text-gold-600" />
+                      <Icon className="w-5 h-5 text-gold-400" />
                     </div>
-                    <div className="text-4xl font-bold text-navy-900 font-display leading-none mb-1">
+                    <div className="text-4xl font-bold text-white font-display leading-none mb-1">
                       <AnimatedCounter value={value} suffix={suffix} />
                     </div>
                     <div className="text-slate-500 text-sm font-medium">{label}</div>

@@ -8,12 +8,12 @@ import { PRODUCTS, PRODUCT_CATEGORIES } from "@/lib/constants";
 import type { Product } from "@/types";
 
 const categoryColors: Record<string, string> = {
-  Agricultural: "bg-green-100 text-green-700",
-  Spices: "bg-amber-100 text-amber-700",
-  Textiles: "bg-purple-100 text-purple-700",
-  Industrial: "bg-slate-100 text-slate-700",
-  "Food Products": "bg-orange-100 text-orange-700",
-  "Raw Materials": "bg-stone-100 text-stone-700",
+  Agricultural: "bg-green-500/15 text-green-400",
+  Spices: "bg-amber-500/15 text-amber-400",
+  Textiles: "bg-purple-500/15 text-purple-400",
+  Industrial: "bg-slate-500/15 text-slate-400",
+  "Food Products": "bg-orange-500/15 text-orange-400",
+  "Raw Materials": "bg-stone-500/15 text-stone-400",
 };
 
 const categoryGradients: Record<string, string> = {
@@ -34,7 +34,7 @@ export default function ProductsSection({ products: propProducts }: { products?:
     : products.filter((p) => p.category === activeCategory);
 
   return (
-    <section id="products" className="section-padding bg-white">
+    <section id="products" className="section-padding bg-navy-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
           badge="Product Range"
@@ -58,7 +58,7 @@ export default function ProductsSection({ products: propProducts }: { products?:
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                 activeCategory === cat
                   ? "text-navy-950 shadow-md scale-105"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/8"
               }`}
               style={activeCategory === cat ? {
                 background: "linear-gradient(135deg, #e6b800 0%, #c9a100 100%)"
@@ -80,7 +80,8 @@ export default function ProductsSection({ products: propProducts }: { products?:
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.94 }}
                 transition={{ duration: 0.3 }}
-                className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white card-hover gold-border-glow shadow-sm"
+                className="group relative overflow-hidden rounded-2xl border border-white/8 card-hover gold-border-glow"
+                style={{ background: "rgba(255,255,255,0.04)" }}
               >
                 {/* Image placeholder */}
                 <div className={`h-48 bg-gradient-to-br ${categoryGradients[category] || "from-navy-900/40 to-navy-800/20"} relative overflow-hidden`}
@@ -99,7 +100,7 @@ export default function ProductsSection({ products: propProducts }: { products?:
                 </div>
 
                 <div className="p-5">
-                  <h3 className="text-navy-900 font-semibold text-base mb-1.5 font-display group-hover:text-navy-700 transition-colors">
+                  <h3 className="text-white font-semibold text-base mb-1.5 font-display group-hover:text-gold-300 transition-colors">
                     {title}
                   </h3>
                   <p className="text-slate-500 text-sm leading-relaxed mb-4 line-clamp-2">{description}</p>

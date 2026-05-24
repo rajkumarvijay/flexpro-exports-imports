@@ -11,7 +11,7 @@ const iconMap: Record<string, React.ElementType> = {
 
 export default function WhyChooseUsSection() {
   return (
-    <section id="why" className="section-padding bg-slate-50">
+    <section id="why" className="section-padding bg-navy-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
           badge="Why FlexPro"
@@ -33,9 +33,10 @@ export default function WhyChooseUsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
-                className={`group relative overflow-hidden rounded-2xl p-7 border border-slate-200 bg-white card-hover gold-border-glow shadow-sm ${
+                className={`group relative overflow-hidden rounded-2xl p-7 border border-white/8 card-hover gold-border-glow ${
                   isLarge && i === 0 ? "md:col-span-2 lg:col-span-1" : ""
                 } ${isLarge && i === 5 ? "md:col-span-2 lg:col-span-1" : ""}`}
+                style={{ background: "rgba(255,255,255,0.04)" }}
               >
                 {/* Background decoration */}
                 <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-5 -translate-y-12 translate-x-12 group-hover:opacity-10 transition-opacity duration-300"
@@ -44,11 +45,11 @@ export default function WhyChooseUsSection() {
                 <div className="relative z-10">
                   <div className="w-12 h-12 rounded-xl mb-5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
                     style={{ background: "linear-gradient(135deg, rgba(230,184,0,0.15), rgba(230,184,0,0.05))" }}>
-                    <Icon className="w-6 h-6 text-gold-600" />
+                    <Icon className="w-6 h-6 text-gold-400" />
                   </div>
 
-                  <h3 className="text-navy-900 font-bold text-base mb-3 font-display">{title}</h3>
-                  <p className="text-slate-500 text-sm leading-relaxed">{description}</p>
+                  <h3 className="text-white font-bold text-base mb-3 font-display">{title}</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">{description}</p>
                 </div>
 
                 {/* Bottom accent */}

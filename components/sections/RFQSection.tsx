@@ -68,7 +68,7 @@ export default function RFQSection() {
   };
 
   return (
-    <section id="rfq" className="section-padding bg-white relative overflow-hidden">
+    <section id="rfq" className="section-padding bg-navy-950 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-1/2 h-full opacity-30"
@@ -105,15 +105,15 @@ export default function RFQSection() {
                     {step}
                   </div>
                   <div>
-                    <div className="text-navy-900 font-semibold text-sm">{title}</div>
+                    <div className="text-white font-semibold text-sm">{title}</div>
                     <div className="text-slate-500 text-sm">{desc}</div>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="mt-8 rounded-2xl p-5 border border-slate-200"
-              style={{ background: "linear-gradient(135deg, #0a1628 0%, #102560 100%)" }}>
+            <div className="mt-8 rounded-2xl p-5 border border-white/10"
+              style={{ background: "linear-gradient(135deg, #0d1f3c 0%, #102560 100%)" }}>
               <p className="text-slate-300 text-sm mb-3">Prefer to talk directly?</p>
               <a href="https://wa.me/919000000000" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-navy-950 hover:scale-105 transition-transform"
@@ -132,9 +132,9 @@ export default function RFQSection() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="lg:col-span-3"
           >
-            <div className="rounded-3xl border border-slate-200 bg-white shadow-xl overflow-hidden">
-              <div className="px-8 py-5 border-b border-slate-100"
-                style={{ background: "linear-gradient(135deg, #0a1628 0%, #102560 100%)" }}>
+            <div className="rounded-3xl border border-white/10 overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}>
+              <div className="px-8 py-5 border-b border-white/5"
+                style={{ background: "linear-gradient(135deg, #0d1f3c 0%, #102560 100%)" }}>
                 <h3 className="text-white font-semibold text-lg font-display">Request for Quote</h3>
                 <p className="text-slate-400 text-sm mt-0.5">Typical response time: within 24 hours</p>
               </div>
@@ -149,10 +149,10 @@ export default function RFQSection() {
                       exit={{ opacity: 0 }}
                       className="text-center py-12"
                     >
-                      <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                        <CheckCircle2 className="w-8 h-8 text-green-600" />
+                      <div className="w-16 h-16 rounded-full bg-green-500/15 flex items-center justify-center mx-auto mb-4">
+                        <CheckCircle2 className="w-8 h-8 text-green-400" />
                       </div>
-                      <h4 className="text-navy-900 font-bold text-xl mb-2">Quote Request Sent!</h4>
+                      <h4 className="text-white font-bold text-xl mb-2">Quote Request Sent!</h4>
                       <p className="text-slate-500 text-sm">Our team will contact you within 24 hours with a competitive quote.</p>
                     </motion.div>
                   ) : (
@@ -160,7 +160,7 @@ export default function RFQSection() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {fields.map(({ name, label, placeholder, icon: Icon, type, required }) => (
                           <div key={name} className={name === "email" || name === "whatsapp" ? "" : ""}>
-                            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">
+                            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">
                               {label} {required && <span className="text-red-400">*</span>}
                             </label>
                             <div className="relative">
@@ -173,8 +173,8 @@ export default function RFQSection() {
                                   if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
                                 }}
                                 placeholder={placeholder}
-                                className={`w-full pl-9 pr-3 py-2.5 rounded-xl border text-sm text-navy-900 placeholder:text-slate-300 outline-none transition-all duration-200 focus:ring-2 focus:ring-gold-500/30 focus:border-gold-400 ${
-                                  errors[name] ? "border-red-300 bg-red-50" : "border-slate-200 bg-slate-50 focus:bg-white"
+                                className={`w-full pl-9 pr-3 py-2.5 rounded-xl border text-sm text-white placeholder:text-slate-600 outline-none transition-all duration-200 focus:ring-2 focus:ring-gold-500/30 focus:border-gold-500/40 ${
+                                  errors[name] ? "border-red-500/40 bg-red-500/5" : "border-white/10 bg-white/5"
                                 }`}
                               />
                             </div>
@@ -187,17 +187,17 @@ export default function RFQSection() {
 
                       {/* Message */}
                       <div>
-                        <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">
+                        <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">
                           Additional Message
                         </label>
                         <div className="relative">
-                          <MessageSquare className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                          <MessageSquare className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
                           <textarea
                             value={form.message}
                             onChange={(e) => setForm((prev) => ({ ...prev, message: e.target.value }))}
                             placeholder="Any specific requirements, packaging preferences, delivery timeline, or questions..."
                             rows={4}
-                            className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-navy-900 placeholder:text-slate-300 outline-none transition-all duration-200 focus:ring-2 focus:ring-gold-500/30 focus:border-gold-400 focus:bg-white resize-none"
+                            className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-white placeholder:text-slate-600 outline-none transition-all duration-200 focus:ring-2 focus:ring-gold-500/30 focus:border-gold-500/40 resize-none"
                           />
                         </div>
                       </div>

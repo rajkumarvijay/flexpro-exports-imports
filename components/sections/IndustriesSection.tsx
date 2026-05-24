@@ -20,7 +20,7 @@ const colorStyles: Record<string, { bg: string; icon: string; border: string }> 
 
 export default function IndustriesSection() {
   return (
-    <section id="industries" className="section-padding bg-white">
+    <section id="industries" className="section-padding bg-navy-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
           badge="Industries"
@@ -41,8 +41,8 @@ export default function IndustriesSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="group relative rounded-2xl p-6 border bg-white card-hover overflow-hidden cursor-pointer"
-                style={{ borderColor: "rgba(226,232,240,1)" }}
+                className="group relative rounded-2xl p-6 border card-hover overflow-hidden cursor-pointer"
+                style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
               >
                 {/* Background on hover */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"
@@ -54,8 +54,8 @@ export default function IndustriesSection() {
                     <Icon className={`w-6 h-6 ${styles.icon}`} />
                   </div>
 
-                  <h3 className="text-navy-900 font-bold text-base mb-2 font-display">{title}</h3>
-                  <p className="text-slate-500 text-sm leading-relaxed mb-4">{description}</p>
+                  <h3 className="text-white font-bold text-base mb-2 font-display">{title}</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed mb-4">{description}</p>
 
                   <button className="flex items-center gap-1.5 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                     style={{ color: "#c9a100" }}>
